@@ -37,6 +37,8 @@
   "情感控制方式": "Emotion control method",
   "GPT2 采样设置": "GPT-2 Sampling Configuration",
   "参数会影响音频多样性和生成速度详见": "Influence both the diversity of the generated audio and the generation speed. For further details, refer to",
+  "是否进行采样": "Enable GPT-2 sampling",
+  "生成Token最大数量，过小导致音频被截断": "Maximum number of tokens to generate. If text exceeds this, the audio will be cut off.",
   "请上传情感参考音频": "Please upload emotion reference audio",
   "当前模型版本": "Current model version ",
   "请输入目标文本": "Please input text to synthesize",

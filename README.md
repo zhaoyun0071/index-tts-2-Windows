@@ -98,10 +98,10 @@ The key contributions of **indextts2** are summarized as follows:
 1. Download this repository:
 ```bash
 git clone https://github.com/index-tts/index-tts.git
-git lfs pull
+git lfs pull # fetch example files
 ```
 2. Install dependencies:
-We use `uv` to initialize and manage the project’s dependency environment.
+We use `uv` to manage the project’s dependency environment.
 ```bash
 uv sync
 ```
@@ -110,32 +110,20 @@ uv sync
 
 Download by `huggingface-cli`:
 ```bash
-huggingface-cli download IndexTeam/IndexTTS-2 \
-  bpe.model config.yaml feat1.pt feat2.pt gpt.pth qwen0.6bemo4-merge s2mel.pth wav2vec2bert_stats.pt
-  --local-dir checkpoints
-```
-
-Or by `wget`:
-```bash
-wget https://huggingface.co/IndexTeam/IndexTTS-2/resolve/main/bpe.model -P checkpoints
-wget https://huggingface.co/IndexTeam/IndexTTS-2/resolve/main/config.yaml -P checkpoints
-wget https://huggingface.co/IndexTeam/IndexTTS-2/resolve/main/feat1.pt -P checkpoints
-wget https://huggingface.co/IndexTeam/IndexTTS-2/resolve/main/feat2.pt -P checkpoints
-wget https://huggingface.co/IndexTeam/IndexTTS-2/resolve/main/gpt.pth -P checkpoints
-wget https://huggingface.co/IndexTeam/IndexTTS-2/resolve/main/qwen0.6bemo4-merge -P checkpoints
-wget https://huggingface.co/IndexTeam/IndexTTS-2/resolve/main/s2mel.pth -P checkpoints
-wget https://huggingface.co/IndexTeam/IndexTTS-2/resolve/main/wav2vec2bert_stats.pt -P checkpoints
-```
-
-Recommended for China users. 如果下载速度慢，可以使用镜像：
-```bash
-export HF_ENDPOINT="https://hf-mirror.com"
+hf download IndexTeam/IndexTTS-2 --local-dir=checkpoints
 ```
 
 Or download by `modelscope`
 ```bash
 modelscope download --model IndexTeam/IndexTTS-2 --local_dir checkpoints
 ```
+
+>In addition to the above models, some small models will also be automatically downloaded when the project is run for the first time. If your network environment has slow access to HuggingFace, it is recommended to execute command below. <br>
+除了以上模型外，项目初次运行时还会自动下载一些小模型，如果您的网络环境访问HuggingFace的速度较慢，推荐执行：
+>```bash
+>export HF_ENDPOINT="https://hf-mirror.com"
+>```
+
 
 
 ### IndexTTS2 Quickstart

@@ -98,7 +98,7 @@ The key contributions of **indextts2** are summarized as follows:
 
 1. Download this repository:
 ```bash
-git clone https://github.com/index-tts/index-tts.git
+git clone https://github.com/index-tts/index-tts.git && cd index-tts
 git lfs pull # fetch example files
 ```
 

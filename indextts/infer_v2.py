@@ -2,6 +2,8 @@ import os
 from subprocess import CalledProcessError
 
 os.environ['HF_HUB_CACHE'] = './checkpoints/hf_cache'
+import json
+import re
 import time
 import librosa
 import torch
@@ -80,23 +82,15 @@ class IndexTTS2:
         else:
             self.gpt.eval()
         print(">> GPT weights restored from:", self.gpt_path)
-        if self.is_fp16:
-            use_deepspeed = True
-            try:
-                import deepspeed
-            except (ImportError, OSError, CalledProcessError) as e:
-                use_deepspeed = False
-                print(f">> DeepSpeed加载失败，回退到标准推理: {e}")
 
-            self.gpt.post_init_gpt2_config(use_deepspeed=use_deepspeed, kv_cache=True, half=True)
-        else:
-            use_deepspeed = True
-            try:
-                import deepspeed
-            except (ImportError, OSError, CalledProcessError) as e:
-                use_deepspeed = False
-                print(f">> DeepSpeed加载失败，回退到标准推理: {e}")
-            self.gpt.post_init_gpt2_config(use_deepspeed=use_deepspeed, kv_cache=True, half=False)
+        use_deepspeed = True
+        try:
+            import deepspeed
+        except (ImportError, OSError, CalledProcessError) as e:
+            use_deepspeed = False
+            print(f">> DeepSpeed加载失败，回退到标准推理: {e}")
+
+        self.gpt.post_init_gpt2_config(use_deepspeed=use_deepspeed, kv_cache=True, half=self.is_fp16)
 
         if self.use_cuda_kernel:
             # preload the CUDA kernel for BigVGAN
@@ -315,8 +309,9 @@ class IndexTTS2:
             # assert emo_alpha == 1.0
             if emo_text is None:
                 emo_text = text
-            emo_dict, content = self.qwen_emo.inference(emo_text)
+            emo_dict = self.qwen_emo.inference(emo_text)
             print(emo_dict)
+            # convert ordered dict to list of vectors; the order is VERY important!
             emo_vector = list(emo_dict.values())
 
         if emo_vector is not None:
@@ -602,59 +597,52 @@ class QwenEmotion:
             device_map="auto"
         )
         self.prompt = "文本情感分类"
-        self.convert_dict = {
-            "愤怒": "angry",
+        self.cn_key_to_en = {
             "高兴": "happy",
-            "恐惧": "fear",
-            "反感": "hate",
+            "愤怒": "angry",
             "悲伤": "sad",
-            "低落": "low",
-            "惊讶": "surprise",
-            "自然": "neutral",
+            "恐惧": "afraid",
+            "反感": "disgusted",
+            # TODO: the "低落" (melancholic) emotion will always be mapped to
+            # "悲伤" (sad) by QwenEmotion's text analysis. it doesn't know the
+            # difference between those emotions even if user writes exact words.
+            # SEE: `self.melancholic_words` for current workaround.
+            "低落": "melancholic",
+            "惊讶": "surprised",
+            "自然": "calm",
         }
-        self.backup_dict = {"happy": 0, "angry": 0, "sad": 0, "fear": 0, "hate": 0, "low": 0, "surprise": 0,
-                            "neutral": 1.0}
+        self.desired_vector_order = ["高兴", "愤怒", "悲伤", "恐惧", "反感", "低落", "惊讶", "自然"]
+        self.melancholic_words = {
+            # emotion text phrases that will force QwenEmotion's "悲伤" (sad) detection
+            # to become "低落" (melancholic) instead, to fix limitations mentioned above.
+            "低落",
+            "melancholy",
+            "melancholic",
+            "depression",
+            "depressed",
+            "gloomy",
+        }
         self.max_score = 1.2
         self.min_score = 0.0
 
+    def clamp_score(self, value):
+        return max(self.min_score, min(self.max_score, value))
+
     def convert(self, content):
-        content = content.replace("\n", " ")
-        content = content.replace(" ", "")
-        content = content.replace("{", "")
-        content = content.replace("}", "")
-        content = content.replace('"', "")
-        parts = content.strip().split(',')
-        print(parts)
-        parts_dict = {}
-        desired_order = ["高兴", "愤怒", "悲伤", "恐惧", "反感", "低落", "惊讶", "自然"]
-        for part in parts:
-            key_value = part.strip().split(':')
-            if len(key_value) == 2:
-                parts_dict[key_value[0].strip()] = part
-        # 按照期望顺序重新排列
-        ordered_parts = [parts_dict[key] for key in desired_order if key in parts_dict]
-        parts = ordered_parts
-        if len(parts) != len(self.convert_dict):
-            return self.backup_dict
+        # generate emotion vector dictionary:
+        # - insert values in desired order (Python 3.7+ `dict` remembers insertion order)
+        # - convert Chinese keys to English
+        # - clamp all values to the allowed min/max range
+        # - use 0.0 for any values that were missing in `content`
+        emotion_dict = {
+            self.cn_key_to_en[cn_key]: self.clamp_score(content.get(cn_key, 0.0))
+            for cn_key in self.desired_vector_order
+        }
 
-        emotion_dict = {}
-        for part in parts:
-            key_value = part.strip().split(':')
-            if len(key_value) == 2:
-                try:
-                    key = self.convert_dict[key_value[0].strip()]
-                    value = float(key_value[1].strip())
-                    value = max(self.min_score, min(self.max_score, value))
-                    emotion_dict[key] = value
-                except Exception:
-                    continue
-
-        for key in self.backup_dict:
-            if key not in emotion_dict:
-                emotion_dict[key] = 0.0
-
-        if sum(emotion_dict.values()) <= 0:
-            return self.backup_dict
+        # default to a calm/neutral voice if all emotion vectors were empty
+        if all(val <= 0.0 for val in emotion_dict.values()):
+            print(">> no emotions detected; using default calm/neutral voice")
+            emotion_dict["calm"] = 1.0
 
         return emotion_dict
 
@@ -687,9 +675,30 @@ class QwenEmotion:
         except ValueError:
             index = 0
 
-        content = self.tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip("\n")
-        emotion_dict = self.convert(content)
-        return emotion_dict, content
+        content = self.tokenizer.decode(output_ids[index:], skip_special_tokens=True)
+
+        # decode the JSON emotion detections as a dictionary
+        try:
+            content = json.loads(content)
+        except json.decoder.JSONDecodeError:
+            # invalid JSON; fallback to manual string parsing
+            # print(">> parsing QwenEmotion response", content)
+            content = {
+                m.group(1): float(m.group(2))
+                for m in re.finditer(r'([^\s":.,]+?)"?\s*:\s*([\d.]+)', content)
+            }
+            # print(">> dict result", content)
+
+        # workaround for QwenEmotion's inability to distinguish "悲伤" (sad) vs "低落" (melancholic).
+        # if we detect any of the IndexTTS "melancholic" words, we swap those vectors
+        # to encode the "sad" emotion as "melancholic" (instead of sadness).
+        text_input_lower = text_input.lower()
+        if any(word in text_input_lower for word in self.melancholic_words):
+            # print(">> before vec swap", content)
+            content["悲伤"], content["低落"] = content.get("低落", 0.0), content.get("悲伤", 0.0)
+            # print(">>  after vec swap", content)
+
+        return self.convert(content)
 
 
 if __name__ == "__main__":

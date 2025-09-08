@@ -7,10 +7,10 @@ import time
 
 import warnings
 
-import pandas as pd
-
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
+
+import pandas as pd
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
@@ -209,9 +209,9 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
         with gr.Accordion(i18n("高级生成参数设置"), open=False):
             with gr.Row():
                 with gr.Column(scale=1):
-                    gr.Markdown(f"**{i18n('GPT2 采样设置')}** _{i18n('参数会影响音频多样性和生成速度详见')}[Generation strategies](https://huggingface.co/docs/transformers/main/en/generation_strategies)_")
+                    gr.Markdown(f"**{i18n('GPT2 采样设置')}** _{i18n('参数会影响音频多样性和生成速度详见')} [Generation strategies](https://huggingface.co/docs/transformers/main/en/generation_strategies)._")
                     with gr.Row():
-                        do_sample = gr.Checkbox(label="do_sample", value=True, info="是否进行采样")
+                        do_sample = gr.Checkbox(label="do_sample", value=True, info=i18n("是否进行采样"))
                         temperature = gr.Slider(label="temperature", minimum=0.1, maximum=2.0, value=0.8, step=0.1)
                     with gr.Row():
                         top_p = gr.Slider(label="top_p", minimum=0.0, maximum=1.0, value=0.8, step=0.01)
@@ -220,7 +220,7 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
                     with gr.Row():
                         repetition_penalty = gr.Number(label="repetition_penalty", precision=None, value=10.0, minimum=0.1, maximum=20.0, step=0.1)
                         length_penalty = gr.Number(label="length_penalty", precision=None, value=0.0, minimum=-2.0, maximum=2.0, step=0.1)
-                    max_mel_tokens = gr.Slider(label="max_mel_tokens", value=1500, minimum=50, maximum=tts.cfg.gpt.max_mel_tokens, step=10, info="生成Token最大数量，过小导致音频被截断", key="max_mel_tokens")
+                    max_mel_tokens = gr.Slider(label="max_mel_tokens", value=1500, minimum=50, maximum=tts.cfg.gpt.max_mel_tokens, step=10, info=i18n("生成Token最大数量，过小导致音频被截断"), key="max_mel_tokens")
                     # with gr.Row():
                     #     typical_sampling = gr.Checkbox(label="typical_sampling", value=False, info="不建议使用")
                     #     typical_mass = gr.Slider(label="typical_mass", value=0.9, minimum=0.0, maximum=1.0, step=0.1)

@@ -95,25 +95,31 @@ The key contributions of **indextts2** are summarized as follows:
 
 ## Usage Instructions
 ### Environment Setup
+
 1. Download this repository:
 ```bash
 git clone https://github.com/index-tts/index-tts.git
 git lfs pull # fetch example files
 ```
-2. Install dependencies:
-We use `uv` to manage the project’s dependency environment.
+
+2. Install the [uv](https://docs.astral.sh/uv/getting-started/installation/) package
+   manager. It is *required* for a reliable, modern installation environment.
+
+3. Install dependencies:
+
+We use `uv` to manage the project's dependency environment.
 ```bash
 uv sync
 ```
 
-3. Download models:
+4. Download models:
 
-Download by `huggingface-cli`:
+Download via `huggingface-cli`:
 ```bash
 hf download IndexTeam/IndexTTS-2 --local-dir=checkpoints
 ```
 
-Or download by `modelscope`
+Or download via `modelscope`
 ```bash
 modelscope download --model IndexTeam/IndexTTS-2 --local_dir checkpoints
 ```
@@ -158,7 +164,7 @@ tts.infer(spk_audio_prompt='examples/voice_07.wav', text=text, output_path="gen.
 ```
 
 
-4. It’s also possible to omit the emotional reference audio and instead provide an 8-float list specifying the intensity of each base emotion (Happy | Angery | Sad | Fear | Hate | Low | Surprise | Neutral). You can additionally control the `use_random` parameter to decide whether to introduce stochasticity during inference; the default is `False`, and setting it to `True` increases randomness:
+4. It's also possible to omit the emotional reference audio and instead provide an 8-float list specifying the intensity of each base emotion (Happy | Angery | Sad | Fear | Hate | Low | Surprise | Neutral). You can additionally control the `use_random` parameter to decide whether to introduce stochasticity during inference; the default is `False`, and setting it to `True` increases randomness:
 ```python
 from indextts.infer_v2 import IndexTTS2
 tts = IndexTTS2(cfg_path="checkpoints/config.yaml", model_dir="checkpoints", is_fp16=False, use_cuda_kernel=False)

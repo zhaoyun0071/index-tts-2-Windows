@@ -1,10 +1,13 @@
 [project]
 name = "index-tts"
-version = "0.1.0"
-description = "Add your description here"
+version = "2.0.0"
+description = "IndexTTS2: A Breakthrough in Emotionally Expressive and Duration-Controlled Auto-Regressive Zero-Shot Text-to-Speech"
+license = "Apache-2.0"
+license-files = ["LICEN[CS]E*", "INDEX_MODEL_LICENSE*"]
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    # IMPORTANT: Always run `uv lock` to resolve and update the lockfile after edits:
     "accelerate==1.8.1",
     "cn2an==0.5.22",
     "cython==3.0.7",
@@ -24,7 +27,7 @@ dependencies = [
     "numpy==1.26.2",
     "omegaconf>=2.3.0",
     "opencv-python==4.9.0.80",
-    "pandas==2.1.3",
+    "pandas==2.3.2",
     "safetensors==0.5.2",
     "sentencepiece>=0.2.1",
     "tensorboard==2.9.1",
@@ -32,9 +35,15 @@ dependencies = [
     "tokenizers==0.21.0",
     "tqdm>=4.67.1",
     "transformers==4.52.1",
-    "wetext>=0.0.9;sys_platform != 'linux'",
-    "WeTextProcessing;sys_platform == 'linux'",
+
+    # Use "wetext" on Windows/Mac, otherwise "WeTextProcessing" on Linux."
+    "wetext>=0.0.9; sys_platform != 'linux'",
+    "WeTextProcessing; sys_platform == 'linux'",
 ]
+
+[project.urls]
+Homepage = "https://github.com/index-tts/index-tts"
+Repository = "https://github.com/index-tts/index-tts.git"
 
 [tool.uv]
 extra-index-url = ["https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"]

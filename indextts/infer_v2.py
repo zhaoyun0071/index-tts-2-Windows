@@ -82,23 +82,15 @@ class IndexTTS2:
         else:
             self.gpt.eval()
         print(">> GPT weights restored from:", self.gpt_path)
-        if self.is_fp16:
-            use_deepspeed = True
-            try:
-                import deepspeed
-            except (ImportError, OSError, CalledProcessError) as e:
-                use_deepspeed = False
-                print(f">> DeepSpeed加载失败，回退到标准推理: {e}")
 
-            self.gpt.post_init_gpt2_config(use_deepspeed=use_deepspeed, kv_cache=True, half=True)
-        else:
-            use_deepspeed = True
-            try:
-                import deepspeed
-            except (ImportError, OSError, CalledProcessError) as e:
-                use_deepspeed = False
-                print(f">> DeepSpeed加载失败，回退到标准推理: {e}")
-            self.gpt.post_init_gpt2_config(use_deepspeed=use_deepspeed, kv_cache=True, half=False)
+        use_deepspeed = True
+        try:
+            import deepspeed
+        except (ImportError, OSError, CalledProcessError) as e:
+            use_deepspeed = False
+            print(f">> DeepSpeed加载失败，回退到标准推理: {e}")
+
+        self.gpt.post_init_gpt2_config(use_deepspeed=use_deepspeed, kv_cache=True, half=self.is_fp16)
 
         if self.use_cuda_kernel:
             # preload the CUDA kernel for BigVGAN

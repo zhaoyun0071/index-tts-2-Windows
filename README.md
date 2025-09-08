@@ -132,7 +132,7 @@ Recommended for China users. 如果下载速度慢，可以使用镜像：
 export HF_ENDPOINT="https://hf-mirror.com"
 ```
 
-Download by `modelscope`
+Or download by `modelscope`
 ```bash
 modelscope download --model IndexTeam/IndexTTS-2 --local_dir checkpoints
 ```

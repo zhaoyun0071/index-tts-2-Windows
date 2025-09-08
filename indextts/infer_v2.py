@@ -603,17 +603,17 @@ class QwenEmotion:
         )
         self.prompt = "文本情感分类"
         self.convert_dict = {
-            "愤怒": "angry",
             "高兴": "happy",
-            "恐惧": "fear",
-            "反感": "hate",
+            "愤怒": "angry",
             "悲伤": "sad",
-            "低落": "low",
-            "惊讶": "surprise",
-            "自然": "neutral",
+            "恐惧": "afraid",
+            "反感": "disgusted",
+            "低落": "melancholic",
+            "惊讶": "surprised",
+            "自然": "calm",
         }
-        self.backup_dict = {"happy": 0, "angry": 0, "sad": 0, "fear": 0, "hate": 0, "low": 0, "surprise": 0,
-                            "neutral": 1.0}
+        self.backup_dict = {"happy": 0, "angry": 0, "sad": 0, "afraid": 0, "disgusted": 0, "melancholic": 0,
+                            "surprised": 0, "calm": 1.0}
         self.max_score = 1.2
         self.min_score = 0.0
 

@@ -1,7 +1,9 @@
 [project]
 name = "index-tts"
-version = "0.1.0"
-description = "Add your description here"
+version = "2.0.0"
+description = "IndexTTS2: A Breakthrough in Emotionally Expressive and Duration-Controlled Auto-Regressive Zero-Shot Text-to-Speech"
+license = "Apache-2.0"
+license-files = ["LICEN[CS]E*", "INDEX_MODEL_LICENSE*"]
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -38,6 +40,10 @@ dependencies = [
     "wetext>=0.0.9; sys_platform != 'linux'",
     "WeTextProcessing; sys_platform == 'linux'",
 ]
+
+[project.urls]
+Homepage = "https://github.com/index-tts/index-tts"
+Repository = "https://github.com/index-tts/index-tts.git"
 
 [tool.uv]
 extra-index-url = ["https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"]

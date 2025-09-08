@@ -7,10 +7,10 @@ import time
 
 import warnings
 
-import pandas as pd
-
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
+
+import pandas as pd
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)

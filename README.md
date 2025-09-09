@@ -22,9 +22,9 @@
     <img src='https://img.shields.io/badge/GitHub-Demo-orange?logo=github'/>
   </a>
   <br/>
-  <!--a href='https://huggingface.co/spaces/IndexTeam/IndexTTS'>
+  <a href='https://huggingface.co/spaces/IndexTeam/IndexTTS-2-Demo'>
     <img src='https://img.shields.io/badge/HuggingFace-Demo-blue?logo=huggingface'/>
-  </a-->
+  </a>
   <a href='https://huggingface.co/IndexTeam/IndexTTS-2'>
     <img src='https://img.shields.io/badge/HuggingFace-Model-blue?logo=huggingface' />
   </a>

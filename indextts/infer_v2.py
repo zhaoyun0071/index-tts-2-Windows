@@ -88,25 +88,11 @@ class IndexTTS2:
             self.gpt.eval()
         print(">> GPT weights restored from:", self.gpt_path)
 
-        try:
-            import deepspeed
-        except (ImportError, OSError, CalledProcessError) as e:
-            if use_deepspeed:
-                print(f">> DeepSpeed加载失败，回退到标准推理: {e}")
-            use_deepspeed = False
+        use_deepspeed = False
 
         self.gpt.post_init_gpt2_config(use_deepspeed=use_deepspeed, kv_cache=True, half=self.use_fp16)
 
-        if self.use_cuda_kernel:
-            # preload the CUDA kernel for BigVGAN
-            try:
-                from indextts.BigVGAN.alias_free_activation.cuda import load
-
-                anti_alias_activation_cuda = load.load()
-                print(">> Preload custom CUDA kernel for BigVGAN", anti_alias_activation_cuda)
-            except:
-                print(">> Failed to load custom CUDA kernel for BigVGAN. Falling back to torch.")
-                self.use_cuda_kernel = False
+        self.use_cuda_kernel = False
 
         self.extract_features = SeamlessM4TFeatureExtractor.from_pretrained("facebook/w2v-bert-2.0")
         self.semantic_model, self.semantic_mean, self.semantic_std = build_semantic_model(

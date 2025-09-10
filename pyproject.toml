@@ -30,7 +30,6 @@ dependencies = [
   "accelerate==1.8.1",
   "cn2an==0.5.22",
   "cython==3.0.7",
-  "deepspeed==0.17.1",
   "descript-audiotools==0.7.2",
   "ffmpeg-python==0.2.0",
   "g2p-en==2.1.0",
@@ -55,10 +54,7 @@ dependencies = [
   "torchaudio==2.8.*",
   "tqdm>=4.67.1",
   "transformers==4.52.1",
-
-  # Use "wetext" on Windows/Mac, otherwise "WeTextProcessing" on Linux.
-  "wetext>=0.0.9; sys_platform != 'linux'",
-  "WeTextProcessing; sys_platform == 'linux'",
+  "wetext>=0.0.9
 ]
 
 [project.optional-dependencies]

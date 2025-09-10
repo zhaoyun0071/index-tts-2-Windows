@@ -133,31 +133,9 @@ git clone https://github.com/index-tts/index-tts.git && cd index-tts
 git lfs pull  # download large repository files
 ```
 
-3. Install the [uv](https://docs.astral.sh/uv/getting-started/installation/) package
-   manager. It is *required* for a reliable, modern installation environment.
+3. pip install -r requirements.txt
 
-4. Install required dependencies:
-
-We use `uv` to manage the project's dependency environment. The following command
-will install the correct versions of all dependencies into your `.venv` directory.
-
-```bash
-uv sync --all-extras
-```
-
-If the download is slow, please try a *local mirror*, for example China:
-
-```bash
-uv sync --all-extras --default-index "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"
-```
-
-**Tip:** You can remove the `--all-extras` flag if you don't want to install the WebUI support.
-
-**Important:** If you see an error about CUDA during the installation, please ensure
-that you have installed NVIDIA's [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit)
-version 12.8 (or newer) on your system.
-
-5. Download the required models:
+4. Download the required models:
 
 Download via `huggingface-cli`:
 
@@ -187,23 +165,15 @@ modelscope download --model IndexTeam/IndexTTS-2 --local_dir checkpoints
 > ```
 
 
-#### 🖥️ Checking PyTorch GPU Acceleration
-
-If you need to diagnose your environment to see which GPUs are detected,
-you can use our included utility to check your system:
-
-```bash
-uv run tools/gpu_check.py
-```
 
 
 ### 🔥 IndexTTS2 Quickstart
 
 #### 🌐 Web Demo
 
-```bash
-uv run webui.py
-```
+
+python webui.py
+
 
 Open your browser and visit `http://127.0.0.1:7860` to see the demo.
 
@@ -215,11 +185,7 @@ the code runs inside your current "uv" environment. It *may* also be necessary
 to add the current directory to your `PYTHONPATH`, to help it find the IndexTTS
 modules.
 
-Example of running a script via `uv`:
 
-```bash
-PYTHONPATH="$PYTHONPATH:." uv run indextts/infer_v2.py
-```
 
 Here are several examples of how to use IndexTTS2 in your own scripts:
 
